@@ -233,3 +233,33 @@ export const deleteAnswerByQuestionId = async (req, res) => {
     return res.status(500).json({ message: 'Unable to fetch questions.' })
   }
 }
+
+export const voteByQuestionId = async (req, res) => {
+  try {
+    const isIdExists = await connectionPool.query({
+      text: 'select exists (select * from questions where id = $1)',
+      values: [req.params.id],
+    })
+
+    if (!isIdExists.rows[0].exists) {
+      return res.status(404).json({ message: 'Question not found.' })
+    }
+
+    if (![1, -1].includes(req.body.vote)) {
+      return res.status(400).json({ message: 'Invalid vote value.' })
+    }
+
+    const result = await connectionPool.query({
+      text: `
+          insert into question_votes (question_id, vote)
+          values($1, $2)
+          RETURNING *`,
+      values: [req.params.id, req.body.vote],
+    })
+    return res.status(200).json({
+      message: 'Vote on the question has been recorded successfully.',
+    })
+  } catch (error) {
+    return res.status(500).json({ message: 'Unable to fetch questions.' })
+  }
+}
