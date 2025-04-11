@@ -146,3 +146,43 @@ export const getQuestionBySearch = async (req, res) => {
     return res.status(500).json({ message: 'Unable to fetch questions.' })
   }
 }
+
+export const createAnswerForQuestion = async (req, res) => {
+  try {
+    // Extract ONLY allowed parameters
+    const { content } = req.body
+
+    if (!content) {
+      return res.status(400).json({ message: 'Invalid request data.' })
+    }
+
+    // Validate no extra parameters were provided
+    const allowedParams = ['content']
+    const invalidParams = Object.keys(req.body).filter(
+      param => !allowedParams.includes(param)
+    )
+
+    if (invalidParams.length > 0) {
+      return res.status(400).json({ message: 'Invalid request data.' })
+    }
+
+    const isIdExists = await connectionPool.query({
+      text: 'select exists (select * from questions where id = $1)',
+      values: [req.params.id],
+    })
+
+    if (!isIdExists.rows[0].exists) {
+      return res.status(404).json({ message: 'Question not found.' })
+    }
+
+    const result = await connectionPool.query({
+      text: `insert into answers (question_id, content) 
+      values($1, $2)
+      returning *`,
+      values: [req.params.id, content],
+    })
+    return res.status(201).json({ message: 'Answer created successfully.' })
+  } catch (error) {
+    return res.status(500).json({ message: 'Unable to fetch questions.' })
+  }
+}

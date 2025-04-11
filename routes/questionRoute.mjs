@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import {
+  createAnswerForQuestion,
   createQuestion,
   deleteQuestion,
   getAllquestions,
@@ -14,6 +15,7 @@ questionRouter.get('/search', getQuestionBySearch)
 questionRouter.get('/', getAllquestions)
 questionRouter.get('/:id', getQuestionById)
 questionRouter.post('/', createQuestion)
+questionRouter.post('/:id/answers', createAnswerForQuestion)
 questionRouter.put('/:id', updateQuestion)
 questionRouter.delete('/:id', deleteQuestion)
 
