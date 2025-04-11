@@ -4,6 +4,7 @@ import {
   createQuestion,
   deleteQuestion,
   getAllquestions,
+  getAnswerByQuestionId,
   getQuestionById,
   getQuestionBySearch,
   updateQuestion,
@@ -14,6 +15,7 @@ const questionRouter = Router()
 questionRouter.get('/search', getQuestionBySearch)
 questionRouter.get('/', getAllquestions)
 questionRouter.get('/:id', getQuestionById)
+questionRouter.get('/:id/answers', getAnswerByQuestionId)
 questionRouter.post('/', createQuestion)
 questionRouter.post('/:id/answers', createAnswerForQuestion)
 questionRouter.put('/:id', updateQuestion)

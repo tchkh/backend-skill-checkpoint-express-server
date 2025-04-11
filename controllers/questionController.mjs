@@ -186,3 +186,24 @@ export const createAnswerForQuestion = async (req, res) => {
     return res.status(500).json({ message: 'Unable to fetch questions.' })
   }
 }
+
+export const getAnswerByQuestionId = async (req, res) => {
+  try {
+    const isIdExists = await connectionPool.query({
+      text: 'select exists (select * from questions where id = $1)',
+      values: [req.params.id],
+    })
+
+    if (!isIdExists.rows[0].exists) {
+      return res.status(404).json({ message: 'Question not found.' })
+    }
+
+    const result = await connectionPool.query({
+      text: `select id, content from answers where question_id = $1`,
+      values: [req.params.id],
+    })
+    return res.status(200).json({ data: result.rows[0] })
+  } catch (error) {
+    return res.status(500).json({ message: 'Unable to fetch questions.' })
+  }
+}
