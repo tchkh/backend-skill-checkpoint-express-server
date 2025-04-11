@@ -152,7 +152,7 @@ export const createAnswerForQuestion = async (req, res) => {
     // Extract ONLY allowed parameters
     const { content } = req.body
 
-    if (!content) {
+    if (!content || content.length > 300) {
       return res.status(400).json({ message: 'Invalid request data.' })
     }
 
