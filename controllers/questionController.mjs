@@ -105,3 +105,44 @@ export const deleteQuestion = async (req, res) => {
     return res.status(500).json({ message: 'Unable to fetch questions.' })
   }
 }
+
+export const getQuestionBySearch = async (req, res) => {
+  try {
+    // Extract ONLY allowed parameters
+    const { title, category } = req.query
+
+    // Validate no extra parameters were provided
+    const allowedParams = ['title', 'category']
+    const invalidParams = Object.keys(req.query).filter(
+      param => !allowedParams.includes(param)
+    )
+
+    if (invalidParams.length > 0) {
+      return res.status(400).json({ message: 'Invalid search parameters' })
+    }
+
+    // Start building the query
+    let queryText = 'SELECT * FROM questions WHERE 1=1'
+    const values = []
+    let paramCount = 1
+
+    // Add title filter if provided
+    if (title) {
+      queryText += ` AND title ILIKE $${paramCount++}`
+      values.push(`%${title}%`)
+    }
+
+    // Add category filter if provided
+    if (category) {
+      queryText += ` AND category ILIKE $${paramCount++}`
+      values.push(`%${category}%`)
+    }
+
+    // Execute the query
+    const result = await connectionPool.query(queryText, values)
+
+    return res.status(200).json({ data: result.rows })
+  } catch (error) {
+    return res.status(500).json({ message: 'Unable to fetch questions.' })
+  }
+}

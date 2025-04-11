@@ -10,6 +10,7 @@ import {
 
 const questionRouter = Router()
 
+questionRouter.get('/search', getQuestionBySearch)
 questionRouter.get('/', getAllquestions)
 questionRouter.get('/:id', getQuestionById)
 questionRouter.post('/', createQuestion)
