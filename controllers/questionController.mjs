@@ -207,3 +207,29 @@ export const getAnswerByQuestionId = async (req, res) => {
     return res.status(500).json({ message: 'Unable to fetch questions.' })
   }
 }
+
+export const deleteAnswerByQuestionId = async (req, res) => {
+  try {
+    const isIdExists = await connectionPool.query({
+      text: 'select exists (select * from questions where id = $1)',
+      values: [req.params.id],
+    })
+
+    if (!isIdExists.rows[0].exists) {
+      return res.status(404).json({ message: 'Question not found.' })
+    }
+
+    const result = await connectionPool.query({
+      text: `
+      delete from answers 
+      where id = $1 
+      returning *`,
+      values: [req.params.id],
+    })
+    return res.status(200).json({
+      message: 'All answers for the question have been deleted successfully.',
+    })
+  } catch (error) {
+    return res.status(500).json({ message: 'Unable to fetch questions.' })
+  }
+}

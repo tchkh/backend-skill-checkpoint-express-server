@@ -2,6 +2,7 @@ import { Router } from 'express'
 import {
   createAnswerForQuestion,
   createQuestion,
+  deleteAnswerByQuestionId,
   deleteQuestion,
   getAllquestions,
   getAnswerByQuestionId,
@@ -20,5 +21,6 @@ questionRouter.post('/', createQuestion)
 questionRouter.post('/:id/answers', createAnswerForQuestion)
 questionRouter.put('/:id', updateQuestion)
 questionRouter.delete('/:id', deleteQuestion)
+questionRouter.delete('/:id/answers', deleteAnswerByQuestionId)
 
 export default questionRouter
